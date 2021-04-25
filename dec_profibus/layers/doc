@@ -1,0 +1,25 @@
+
+Decprofibus is a PROFIBUS stack written in Python.
+Hardware
+
+
+pyprofibus comes with a couple of examples that can teach you how to use pyprofibus in your project.
+
+example_dummy.py
+example_dummy.conf
+
+	Example that runs pyprofibus without any hardware.
+This example can be used to play around with pyprofibus.
+
+example_et200s.py
+example_et200s.conf
+
+	Example that runs pyprofibus as master connected to an ET 200S as slave.
+
+example_s7-315-2dp.py
+example_s7-315-2dp.conf
+
+	Example that runs pyprofibus as master connected to an S7-315-2DP as slave.
+Dependencies
+
+    Python 3.4 or later or Python 2.7: python.org
