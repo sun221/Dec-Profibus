@@ -202,7 +202,41 @@ Transeiver tha can trasnmit Profibus-DP formated Data ,
 - FdlTelegram_stat8
 
 #### DPLayer Layer 
+FdlLayer is divided into two parts :
+- DpTranseiver .
+- default Dp Packets .
 
+##### DpTranseiver
+Transeiver tha can trasnmit Profibus-DP layer 3 formated Data ,
+- poll  : polling the data from physical bus
+- send : sending the data 
+
+##### default Dp Packets 
+All these packets inheret from DpTelegram which offers many useful methods like :
+- fromFdlSd1 : convert a FdlLayer packet to an DpLayer packet
+- getDU  : get the Data field of the packet 
+- checkType : check the type of the Dplayer packet
+- toFdlSd1 : convert a DPlayer packet to an FdlLayer packet
+
+type of Dplayer packets :
+- DpTelegram_DataExchange_Req  
+- DpTelegram_DataExchange_Con
+- DpTelegram_SlaveDiag_Req
+- DpTelegram_SlaveDiag_Con
+- DpTelegram_SET_SLAVE_ADDR
+- DpTelegram_SetPrm_Req
+- DpTelegram_ChkCfg_Req
+- DpTelegram_GetCfg_Req
+- DpTelegram_GetCfg_Con
+
+#### Auto_response
+Auto_response is a library that has many methods to use like chooser , it's the underlying layer of any slave ;
+- chooserScapy(packet_in) : this method takes a packet as an input and give a slave packet response , the response depends on the configuration of the slave .
+Use example :
+```sh
+  packet = fdltranseiver.poll()
+  response = chooserScapy(packet)
+```
 
 ### Misc tools 
 Profiwrite : Interactive shell to manipulate and send profibus packets 
