@@ -1,13 +1,10 @@
 # DecProfibus
 
-
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)]()
-
-DecProfibus is a  PROFIBUS-DP stack written in Python, based on Scapy, easy to use, offer many tools.
+DecProfibus is a  PROFIBUS-DP stack written in Python, based on Scapy, easy to use, offers many tools.
 
   - Run a DP master class 1 and class 2 and a basic Slave.
   - Read and analyse PROFIBUS-DP Frames.
-  - Offers a simulation env based on both Socket and Serial Bus .
+  - Offer simulation env based on both Socket and Serial Bus .
 
 # New Features!
 
@@ -16,7 +13,8 @@ DecProfibus is a  PROFIBUS-DP stack written in Python, based on Scapy, easy to u
 
 You can also:
   - Scan a PROFIBUS-DP Bus.
-  - Spam a PROFIBUS-DP Bus .
+  - Create a PROFIBUS-DP Master .
+  - Create a PROFIBUS-DP Slave .
   - Extend the built-in library .
 
 Profibus is a standard for fieldbus communication in automation technology and was first promoted in 1989 by BMBF (German department of education and research) and then used by Siemens. It should not be confused with the PROFINET standard for Industrial Ethernet. PROFIBUS is openly published as part of IEC 61158.
@@ -28,14 +26,15 @@ DecProfibus is based on Python 3.4 or later:
 * [Socat] - great tool for serial bus tests and simulations !
 * [Python] - 
 
-And DecProfibus is not yet an open source project .
+
 
 ### Layers and Librairies
 
-DecProfibus is currently builded following many layers and librairies located in layers folder. The order is top bottom , every layer use the one bellow it .
+DecProfibus is currently built following many layers and libraries located in the layers folder. The order is top-bottom, every layer uses the one below it.
 
 | Layer | File |
 | ------ | ------ |
+| Dpmaster Layer | master/Dpmaster.py |
 | Response Layer | layer/autoresponse.py |
 | DpLayer | layer/DpLayer.py |
 | FDL Layer | layer/FdlLayer.py|
@@ -57,14 +56,14 @@ DecProfibus has many options you can use , here are some of them:
 * Configuration
 * Data Exchange 
 
-A standar use looks like :
+A normal use looks like :
 ```sh
 $ python3 slave1 no slave_addr 
 ```
 ```sh
 $ python3 slave1 /dev/USBttyx slave_addr
 ```
-PS: you should note that slave_addr is the Slave address , and "no" is for socket use
+PS: you should note that slave_addr is the Slave address , and "no" is for socket use i.e (no = do not use socket)
 ##### For a recon use :
 When using socket bus :
 ```sh
@@ -133,10 +132,82 @@ DecProfibus is currently builded following many directories .
 | slave | Slaves with multiple lvl 0- 2 |
 | tools | some misc tools |
 
+| DpMaster | Auto_response |
+| DpLayer                  |
+
+### Layers Librairy 
+#### Databox Layer
+Databox Layer represents the headers added to the original Profibus_Dp Frame , To use the Databox Headers , you first have to import it :
+```sh
+ from dec_profibus.layers.databox_scapy import DataboxLayer  
+```
+Use example :
+```sh
+ telegramData = DataboxLayer()/FdlSd1()
+```
+#### Phy Layer
+
+Phy Layer is the base layer that all other physical layers should be built on, it has many methods that must be overwrited  :
+the most important ones are : 
+- Close(self) : specify how the physical connexion should be closed and killed .
+- pollData(timeout)   : specify how the data gonna be polled and readed from the physical bus .
+- sendData : specify how the data should be sended through the physical Bus .
+
+#### Socket Layer - Serial Layer - Pcap Layer
+socket, serial, and Pcap Layers are built on the Phy Layer and overwrite all its methods  :
+the most important ones are : 
+- Close(self): specify how the physical connexion should be closed and killed.
+- pollData(timeout): specify how the data gonna be polled and read from the physical bus.
+- sendData(telegram data, srd): specify how the data should be sent through the physical Bus, telegramData is the raw data that's gonna be transmitted through the bus.
+- 
+#### FdlLayer Layer 
+FdlLayer is divided into three parts :
+- FdlSd1 packet builder .
+- FdlTranseiver .
+- default FdlTelegram .
+##### FdlLSd1 packet builder
+FdlSd1 is a Profibus-DP packet builder ,it can be used to build Profibus-DP build Raw Data or using Parameters .
+ you first have to import it :
+```sh
+ from dec_profibus.layers.dec_scapy import FdlSd1  
+```
+Use example :
+```sh
+ telegramData = FdlSd1(SD = 0x10 , DA = 0x2 , SA = 0x1 )
+ telegramData.show()
+ telegramData.show2() : to build the FCS (the final packet)
+ raw(telegramData)   : trandform the packet to raw data
+```
+Construct packet from raw Data :
+```sh
+ telegramData = FdlSd1( rawpacket )
+ 
+```
+
+##### FdlLTranseiver 
+Transeiver tha can trasnmit Profibus-DP formated Data ,
+- poll
+- send
+- sendNoFcb
+
+##### Fdl Default Packet  
+- FdlTelegram_stat0
+- FdlTelegram_token
+- FdlTelegram_ack
+- FdlTelegram_FdlStat_Req
+- FdlTelegram_FdlStat_Con
+- FdlTelegram_Ident_Req
+- FdlTelegram_LSAp_Req
+- FdlTelegram_var
+- FdlTelegram_stat8
+
+#### DPLayer Layer 
+
+
 ### Misc tools 
 Profiwrite : Interactive shell to manipulate and send profibus packets 
-Spammer : Script that spam the master in order to make hom out of service
-### Todos
+Spammer : Script that spam the master in order to makee it out of service
+### Todo
 
  - Write MORE Tests 
  - Add a Pcap module
@@ -150,11 +221,7 @@ EDF R&D
 
 **Have Fun **
 
-[//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
-
-   [dill]: <https://github.com/joemccann/dillinger>
-   [git-repo-url]: <https://github.com/joemccann/dillinger.git>
  
 
 
